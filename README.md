@@ -1,2 +1,2 @@
 # machinelearning
-Codes from my Machine Learning course in Summer 2019
+Self implemented codes based on my Machine Learning coursework starting Summer 2019
