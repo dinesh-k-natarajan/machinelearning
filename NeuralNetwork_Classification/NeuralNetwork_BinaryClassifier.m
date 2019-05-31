@@ -20,7 +20,8 @@ data = data(randperm(size(data,1)),:);
 h = [2 20 1]; % size of [input layer, hidden layer(s), output layer]
 lambda = 0;   % regularization parameter (increase if NN is overfitting)
 Activation = 'LeakyReLU'; % Activation function types: 'LeakyReLU', 'ReLU', 'Sigmoid', 'tanh'
-
+LossFn = 'NLL'; % Loss function types: 'Hinge', 'NLL'
+ 
 %% Initialization of Weights
 [W,b] = InitializeWeights(h,'W_rand','b_rand');
 
@@ -28,11 +29,11 @@ Activation = 'LeakyReLU'; % Activation function types: 'LeakyReLU', 'ReLU', 'Sig
 [X,Z,f_beta] = ForwardProp(data(:,1:2)',h,W,b,Activation); 
 
 % Backward Propagation
-[grad_W,grad_b] = BackwardProp(data(:,3)',X,Z,f_beta,h,W,b,Activation);
+[grad_W,grad_b] = BackwardProp(data(:,3)',X,Z,f_beta,h,W,b,Activation,LossFn);
 
 % Gradient Descent Optimization of NN parameters
 alpha = 0.01; % Learning rate for GD
-[W_opt,b_opt,X_opt,Z_opt,f_beta_opt,Loss_opt] = GradDesc(data,h,W,b,f_beta,grad_W,grad_b,alpha,lambda,Activation);
+[W_opt,b_opt,X_opt,Z_opt,f_beta_opt,Loss_opt] = GradDesc(data,h,W,b,f_beta,grad_W,grad_b,alpha,lambda,Activation,LossFn);
 
 %% Accuracy Measure
 pred = f_beta_opt;
@@ -77,4 +78,4 @@ test_input = rand(h(1),1); % (d x m) array, d: input dim, m: data set size
 fprintf('\nTest_input values: %0.4f',test_input);
 [~,~,test_pred] = ForwardProp(test_input,h,W_opt,b_opt,Activation);
 test_pred_label = cell2mat({test_pred>0}).*1; % pred label as 1 if pred >0, 0 if pred < 0. 
-fprintf('\nPredicted value for test_input: %0.4f\n', test_pred_label);
+fprintf('\nPredicted value for test_input: %d\n', test_pred_label);

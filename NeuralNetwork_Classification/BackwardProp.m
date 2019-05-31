@@ -1,4 +1,4 @@
-function [grad_W, grad_b] = BackwardProp(y,X,Z,f_beta,h,W,b,Activation)
+function [grad_W, grad_b] = BackwardProp(y,X,Z,f_beta,h,W,b,Activation,LossFn)
 %% BackwardProp(y,X,Z,f_beta,h,W,b)
 % INPUT: 
 %       y      : Output class labels (1 x m array)
@@ -10,6 +10,7 @@ function [grad_W, grad_b] = BackwardProp(y,X,Z,f_beta,h,W,b,Activation)
 %       W      : cell containing the initialised weight matrices
 %       b      : cell containing the initialised biases
 %   Activation : Type of activation function to be used
+%       LossFn : Type of loss function to be used    
 % OUTPUT:
 %       grad_W : cell containing gradients w.r.t the weights of each layer
 %       grad_b : cell containing gradient w.r.t the biases of each layer
@@ -23,8 +24,14 @@ grad_b = cell(L,1);
 del    = cell(L,1);
 
 % Calculation of gradients w.r.t 'z' of all layers
-y(y==0)  = -1; % convert y to -1's and 1's
-del{L,1} = (-y.*(1-y.*f_beta'>0))'; % gradient of hinge loss
+if strcmp(LossFn,'Hinge')
+    y(y==0)  = -1; % convert y to -1's and 1's
+    del{L,1} = (-y.*(1-y.*f_beta'>0))'; % gradient of hinge loss
+elseif strcmp(LossFn, 'NLL')
+    del{L,1} = (sigmoid(f_beta')-y)'; % gradient of binary NLL loss 
+else
+    error('Error: Invalid Loss function, check assigned loss function type');
+end
 
 for i=L-1:-1:1
    del{i,1} = del{i+1,1} * W{i+1,1} .* DerivativeActivationFunction(Z{i,1},Activation)';

@@ -1,4 +1,4 @@
-function [W_opt,b_opt,X_opt,Z_opt,f_beta_opt,Loss_opt] = GradDesc(data,h,W,b,f_beta,grad_W,grad_b,alpha,lambda,Activation)
+function [W_opt,b_opt,X_opt,Z_opt,f_beta_opt,Loss_opt] = GradDesc(data,h,W,b,f_beta,grad_W,grad_b,alpha,lambda,Activation,LossFn)
 %% GradDesc(data,h,W,b,grad_W,grad_b,alpha)
 % INPUT:
 %       data        : Inputs and Output labels from data set
@@ -12,6 +12,7 @@ function [W_opt,b_opt,X_opt,Z_opt,f_beta_opt,Loss_opt] = GradDesc(data,h,W,b,f_b
 %       alpha       : learning rate for the gradient descent algorithm
 %       lambda      : regularization parameter
 %       Activation  : Type of activation function to be used
+%       LossFn      : Type of loss function to be used    
 % OUTPUT:
 %       W_opt       : cell containing optimized weight matrices
 %       b_opt       : cell containing optimized bias arrays
@@ -30,7 +31,7 @@ delta = ones(L,2);
 figure('visible','on');clf;movegui('center');hold on;
 title('Convergence of Gradient Descent');
 xlabel('Number of iterations');ylabel('Hinge Loss');
-loss = HingeLoss(f_beta,data(:,3),W,lambda);
+loss = Loss(f_beta,data(:,3),W,lambda,LossFn);
 
 % Update of NN parameters
 while (count<max_iter && mean(delta(:))>tol)
@@ -41,10 +42,10 @@ while (count<max_iter && mean(delta(:))>tol)
         delta(i,2) = norm(grad_b{i,1})/numel(grad_b{i,1});
     end
     [X,Z,f_beta]    = ForwardProp(data(:,1:2)',h,W,b,Activation);
-    [grad_W,grad_b] = BackwardProp(data(:,3)',X,Z,f_beta,h,W,b,Activation);
+    [grad_W,grad_b] = BackwardProp(data(:,3)',X,Z,f_beta,h,W,b,Activation,LossFn);
     if ~mod(count,100)
         loss0 = loss;
-        loss  = HingeLoss(f_beta,data(:,3),W,lambda); 
+        loss  = Loss(f_beta,data(:,3),W,lambda,LossFn); 
         plot([count-100 count],[loss0 loss], 'k-');
         fprintf('Iteration %d, Norm = %0.5f, Loss = %0.4f\n',count,mean(delta(:)),loss);
     end
@@ -52,7 +53,7 @@ while (count<max_iter && mean(delta(:))>tol)
 end
 
 % Extracting values from the terminated while loop
-loss = HingeLoss(f_beta,data(:,3),W,lambda); 
+loss = Loss(f_beta,data(:,3),W,lambda,LossFn); 
 plot(count, loss, 'r.','MarkerSize',20);
 fprintf('Iteration %d, Norm = %0.5f, Loss = %0.4f\n',count,mean(delta(:)),loss);
 W_opt      = W;
