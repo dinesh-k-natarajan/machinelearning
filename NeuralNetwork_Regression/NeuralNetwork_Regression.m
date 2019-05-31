@@ -18,7 +18,7 @@ data = data(randperm(size(data,1)),:);
 %% Setup
 % Neural Network Structure
 h = [2 20 1]; % size of [input layer, hidden layer(s), output layer]
-lambda = 1;   % regularization parameter (increase if NN is overfitting, or if data is noisy)
+lambda = 0;   % regularization parameter (increase if NN is overfitting, or if data is noisy)
 Activation = 'LeakyReLU'; % Activation function types: 'LeakyReLU', 'ReLU', 'Sigmoid', 'tanh'
 
 %% Initialization of Weights
