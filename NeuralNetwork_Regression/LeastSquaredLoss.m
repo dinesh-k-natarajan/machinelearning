@@ -18,6 +18,6 @@ for i=1:size(W,1)
 end
 
 % loss
-loss = norm(f-y)/size(y,1)+(lambda/(size(y,1)))*(norm(weights));
+loss = norm(f-y)/size(y,1)+(lambda/(2*size(y,1)))*(norm(weights));
 end
 
